@@ -1,8 +1,10 @@
 {
   "name": "get-npm-assets",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "A command line tool for moving template asset files from an npm package to the current working directory",
-  "main": "index.js",
+  "bin" : {
+    "get-npm-assets" : "./index.js"
+  },
   "scripts": {
     "test": "node tests/index.js"
   },

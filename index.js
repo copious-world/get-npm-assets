@@ -139,7 +139,7 @@ async function run_utility() {
         // ---- ---- ---- ---- ---- ---- ----
         if ( bin_index >= 0 ) {
             console.log(`${prog_name} has been found as an executable`)
-            let mod_path = await get_executable_module(prefix,`${bindir}/${prog_name}`)
+            mod_path = await get_executable_module(prefix,`${bindir}/${prog_name}`)
             console.log(mod_path)
         } else if ( mod_index >= 0 ) {
             console.log(`${prog_name} has been found as a module`)
