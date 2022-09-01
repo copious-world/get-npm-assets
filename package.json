@@ -1,0 +1,29 @@
+{
+  "name": "get-npm-assets",
+  "version": "1.0.1",
+  "description": "A command line tool for moving template asset files from an npm package to the current working directory",
+  "main": "index.js",
+  "scripts": {
+    "test": "node tests/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/copious-world/get-npm-assets.git"
+  },
+  "keywords": [
+    "npm",
+    "tool",
+    "helper",
+    "config-files"
+  ],
+  "funding": {
+    "type": "GitHub Sponsors",
+    "url": "https://github.com/sponsors/copious-world"
+  },
+  "author": "R. Leddy",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/copious-world/get-npm-assets/issues"
+  },
+  "homepage": "https://github.com/copious-world/get-npm-assets#readme"
+}
