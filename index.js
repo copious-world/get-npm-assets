@@ -166,8 +166,14 @@ async function run_utility() {
             if ( moveables ) {
                 for ( let conf of moveables ) {
                     let outfile = path.basename(conf)
-                    let in_file = `${mod_path}/${outfile}`
-                    await fsPromises.copyFile(in_file,`./assets/${outfile}`)
+                    let in_file = `${mod_path}/assets/${outfile}`
+                    try {
+                        await fsPromises.copyFile(in_file,`./assets/${outfile}`)
+                    } catch (e) {
+                        try {
+                            await fsPromises.mkdir(`./assets/${outfile}`)
+                        } catch (e) {}
+                    }
                 }
             }
         } else {
