@@ -78,7 +78,10 @@ async function get_executable_module(prefix,prog_name) {
     return module_path
 }
 
-
+// get_moveable_files
+// once the module directoy has been found, search for assets in the directory (just use ls)
+// run three `ls` commands with one glob pattern for each. In the end, create a `move map`. 
+// The move map will include the results of each ls command as: 1.  "conf", 2. assets directory, 3. an asset map file 
 async function get_moveable_files(mod_path) {
     let queries = [
         `${mod_path}/*.conf`,
@@ -148,17 +151,28 @@ async function run_utility() {
 
         move_files_list = await get_moveable_files(mod_path)
         //
-        if ( move_files_list["map"] ) {
-
+        if ( move_files_list["map"] ) {     // MAP FILE ... the asset map file has been found
+            //
             let filename = move_files_list["map"]
             console.log(filename)
             let jobj = await load_json_file(filename)
             if ( jobj ) {
-                let file_to_move = jobj[prog_name]
-                let in_file = `${mod_path}/${file_to_move}`
-                await fsPromises.copyFile(in_file,`./${file_to_move}`)
+                let file_to_move = jobj[prog_name]          //  one file per command name (see package.json for the bin list)
+                if ( Array.isArray(file_to_move) ) {
+                    let promises = []
+                    for ( let file of file_to_move ) {
+                        let in_file = `${mod_path}/${file}`
+                        let p = fsPromises.copyFile(in_file,`./${file}`)
+                        promises.push(p)
+                    }
+                    if ( promises.length ) await Promise.all(promises)
+                } else if ( typeof file_to_move === 'string' ) {
+                    let in_file = `${mod_path}/${file_to_move}`
+                    await fsPromises.copyFile(in_file,`./${file_to_move}`)    
+                }
             }
-        } else if ( move_files_list["dir"] ) {
+            //
+        } else if ( move_files_list["dir"] ) {          //  DIRECTORY ...  assets directory ... 
             try {
                 await fsPromises.mkdir('./assets')
             } catch(e) {}
@@ -176,7 +190,7 @@ async function run_utility() {
                     }
                 }
             }
-        } else {
+        } else {            // CONF FILES ... the last possibiity is just grabbing the *.conf files....
             let moveables = move_files_list["confs"]
             if ( moveables ) {
                 for ( let conf of moveables ) {

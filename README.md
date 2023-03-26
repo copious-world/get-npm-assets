@@ -68,7 +68,7 @@ This is not a list of them. This is an overview as to how to make an npm package
 
 1. It needs to be a globally installed command line utility that is stored in the packages `<package>/bin` directory.
 2. There needs to be one of three possible resources accessible from the top level of the npm package directory, the one you find in node_modules.
-	1. **.config** files at the top level of the directory will be moved to the current working directory.
+	1. **.conf** files at the top level of the directory will be moved to the current working directory.
 	2. there can be a `<package>/assets` directory, sibling to the `<package>/bin` directory, all of whose assets will be moved to the current working directory
 	3. There can be an asset-map.config file. And, this file will contain a JSON formatted object that maps the command-line names to files that should be moved to the current working directory. Relative paths will be assumed. The command line names would be the same as those in the `bin` field of the package.json file.
 
@@ -81,7 +81,7 @@ There are three ways **get-npm-assets** finds files for the package or program. 
 
 Here are the three ways this utility finds files:
 
-* **\*.config** files in the top level directory of the package
+* **\*.conf** files in the top level directory of the package
 * a single **asset-map.json** file in the top level directory of the package
 * an **assets** directory with any files in it
 
@@ -89,7 +89,7 @@ The program **get-npm-assets** uses only one of these options. (**uses only one 
 
 1. It looks for the asset map
 2. If there is no asset map, it looks for the asset directory
-3. Finally, it looks for \*.config files.
+3. Finally, it looks for \*.conf files.
 4. If nothing is found, it will do nothing
 
 The program **get-npm-assets** looks in the global **bin** directory for the parameter. Then it looks in the global **node_modules** directory. So, if your package has a bin/*script* with same name as the package, it will still look in the package directory just as if there were no bin/*script* files. But, if the package installs scripts in the bin directory with different names, **get-npm-assets** will figure the directory from the (/bin dir) alias link to the scripts in the package directory.
@@ -135,6 +135,17 @@ So, the example below shows how to get a version of the file relay-service.conf.
 It might be that the project will do a post install - specified in their npm file. But, even in the simple case of this example, the post install script can't make an assumption as to which command, from the bin field of package.json, will be used for the application project. So, the asset map clarifies which file to get.
 
 Of course, the package might have had an `<package>/assets` directory with a number o files in it. In that case, an `./assets` diretory is made in the calling directory (the current working directory) and files are copied into the new assets directory from the package.
+
+When using the asset map, if a command-line name indicates a program that needs a list of assets, it's field in **asset-map.json** may have an array value as such:
+
+```
+{
+    "run-cnd" : ["run-service.conf","logo.jpg",".etc"]
+}
+```
+
+Once again, each file in the list is expected to be at some offset from the module top directory under node_modules.
+
 
 ### Once again
 
