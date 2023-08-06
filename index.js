@@ -34,6 +34,20 @@ console.log(`Searching for assets for ${prog_name}`)
 // ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
 
+async function check_local(prog_name) {
+    try {
+        let pckg_data = await fsPromises.readFile('package.json')
+        let pjson = JSON.parse(pckg_data.toString())
+        let deps = pjson.dependencies
+        if ( prog_name in deps ) {
+            return 1    // return something like an index (the others are checked in lists)
+        }
+    } catch (e) {
+        console.log("no package.json")
+    }
+    return -1
+}
+
 async function get_prefix() {
     const { stdout, stderr } = await exec('npm config get prefix');
     return stdout.trim()
@@ -112,6 +126,7 @@ async function get_moveable_files(mod_path) {
 
 async function run_utility() {
     //
+    let local_index = await check_local(prog_name)
     let prefix = await get_prefix()
     let bindir = await  get_bin_dir()
 
@@ -124,7 +139,8 @@ async function run_utility() {
         return entry.trim()
     })
 
-    let mod_index = lib_list.indexOf(prog_name)
+    let mod_index = (local_index < 0) ? lib_list.indexOf(prog_name) : -1
+
 
     let bin_list = await show_ls(bindir)
     bin_list = bin_list.split('\n')
@@ -132,11 +148,11 @@ async function run_utility() {
         return entry.trim()
     })
 
-    let bin_index = bin_list.indexOf(prog_name)
+    let bin_index = (local_index < 0) ? bin_list.indexOf(prog_name) : -1
 
     let move_files_list = {}
 
-    if ( (mod_index >= 0) || (bin_index >= 0) ) {
+    if ( (mod_index >= 0) || (bin_index >= 0) || (local_index >= 0) ) {
         // ---- ---- ---- ---- ---- ---- ----
         let mod_path = ""
         // ---- ---- ---- ---- ---- ---- ----
@@ -146,9 +162,12 @@ async function run_utility() {
             console.log(mod_path)
         } else if ( mod_index >= 0 ) {
             console.log(`${prog_name} has been found as a module`)
-            mod_path = `${prefix}/lib/node_modules//${prog_name}`
-        } 
-
+            mod_path = `${prefix}/lib/node_modules/${prog_name}`
+        } else if ( local_index >= 0 ) {
+            console.log(`${prog_name} has been found as a package.json dependency`)
+            mod_path = `./node_modules/${prog_name}`
+        }
+        //
         move_files_list = await get_moveable_files(mod_path)
         //
         if ( move_files_list["map"] ) {     // MAP FILE ... the asset map file has been found

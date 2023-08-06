@@ -1,10 +1,12 @@
 # get-npm-assets
 
-A command line utility for copying asset files from the top level directory of a globally intalled npm package to the current working directory, the directory where the command will be invoked.
+A command line utility for copying asset files from the top level directory of a globally intalled npm package to the current working directory, the directory where the command will be invoked. Also, this utility copy assets from a package in the `node_modules` directory of a npm project dependency (which must be listed in `package.json`.
 
 ## purpose
 
 This utility is intended to make the installation and initial usage of node.js command line utitlies a little easier. It is useful especially for cases where an example configuration file is needed for users of the command line. This allows the user to get a file to start running the program without having to get it from another web page or digging down into the npm package directory to get a copy. Often times, the example configuration can be a template that the user can change values in for his own operations. 
+
+This utility has been extended to the local case to aid in developing packages. It is helpful in getting JavaScript files or WASM files useful in testing prior to setting up package managers such as *rollup*. For instance, the package [wasm-base-wrap](https://www.npmjs.com/package/wasm-base-wrap) contains a few files in its asset directory that provide such things as a JavaScript class that picks up the methods from the WASM implementation. 
 
 ## installation
 
